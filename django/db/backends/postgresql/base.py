@@ -261,3 +261,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def pg_version(self):
         with self.temporary_connection():
             return get_version(self.connection)
+
+    def update_table_statistics(self, table_name):
+        self.cursor().execute('ANALYZE ?', table_name)

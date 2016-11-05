@@ -34,6 +34,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
     supports_temporal_subtraction = True
     ignores_quoted_identifier_case = True
+    update_table_statistics = True
 
     @cached_property
     def uses_savepoints(self):

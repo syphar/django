@@ -318,6 +318,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         except ValueError:
             return None
 
+    def update_table_statistics(self, table_name):
+        # EXEC DBMS_STATS.GATHER_TABLE_STATS ('my_schema', 'my_table');
+        self.cursor().execute('ANALYZE ?', table_name)
+
 
 class OracleParam(object):
     """

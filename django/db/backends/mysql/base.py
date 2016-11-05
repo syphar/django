@@ -367,3 +367,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         if not match:
             raise Exception('Unable to determine MySQL version from version string %r' % server_info)
         return tuple(int(x) for x in match.groups())
+
+    def update_table_statistics(self, table_name):
+        self.cursor().execute('ANALYZE TABLE ?', table_name)

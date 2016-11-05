@@ -231,6 +231,9 @@ class BaseDatabaseFeatures(object):
     # Place FOR UPDATE right after FROM clause. Used on MSSQL.
     for_update_after_from = False
 
+    # Does the backend support updating table statistics for tables?
+    update_table_statistics = False
+
     def __init__(self, connection):
         self.connection = connection
 

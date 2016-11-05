@@ -649,3 +649,8 @@ class BaseDatabaseWrapper(object):
         if allow_thread_sharing is None:
             allow_thread_sharing = self.allow_thread_sharing
         return type(self)(settings_dict, alias, allow_thread_sharing)
+
+    def update_table_statistics(self, table_name):
+        """Updates the table statistics for this specific table. """
+        if self.features.update_table_statistics:
+            raise NotImplemented()

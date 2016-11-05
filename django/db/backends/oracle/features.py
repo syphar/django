@@ -38,6 +38,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # Oracle doesn't ignore quoted identifiers case but the current backend
     # does by uppercasing all identifiers.
     ignores_quoted_identifier_case = True
+    update_table_statistics = True
 
     def introspected_boolean_field_type(self, field=None, created_separately=False):
         """
