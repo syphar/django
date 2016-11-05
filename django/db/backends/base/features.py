@@ -231,6 +231,10 @@ class BaseDatabaseFeatures(object):
     # Place FOR UPDATE right after FROM clause. Used on MSSQL.
     for_update_after_from = False
 
+    # does the database have any way to estimate result counts for a
+    # certain result set / sql statement?
+    can_estimate_count = False
+
     def __init__(self, connection):
         self.connection = connection
 

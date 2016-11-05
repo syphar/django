@@ -1935,6 +1935,30 @@ retrieving model instances from it (for example, by iterating over it), it's
 probably more efficient to use ``len(queryset)`` which won't cause an extra
 database query like ``count()`` would.
 
+``estimate_count()``
+~~~~~~~~~~~~~~~~~~~~
+
+.. method:: estimate_count()
+.. versionchanged:: 1.11
+
+Returns an integer representing the estimated count of objects in the database
+matching the ``QuerySet``. Currently this is only supported by the PostgreSQL
+database backend. The estimation is based on the current table statistics every
+database holds for optimizing query execution.
+
+This method is useful if you don't need an exact count, but an estimation is
+enough.
+
+The ``estimate_count()`` method raises :exc:`~NotImplementedError` if the
+database backend does not support this feature.
+
+.. warning::
+
+    Most databases are configured to regularly update these statistics so
+    they can execute queries faster. Nevertheless on every write that statistic
+    data is outdated again, so the count-estimation will always be an out-of-date
+    view on the data.
+
 ``in_bulk()``
 ~~~~~~~~~~~~~
 

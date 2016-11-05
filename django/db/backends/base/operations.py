@@ -43,6 +43,9 @@ class BaseDatabaseOperations(object):
         """
         return None
 
+    def estimate_count(self, cursor, query, params):
+        raise NotImplementedError('subclasses of BaseDatabaseOperations may require a estimate_count() method')
+
     def bulk_batch_size(self, fields, objs):
         """
         Returns the maximum allowed batch size for the backend. The fields

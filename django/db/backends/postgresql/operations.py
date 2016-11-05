@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
+import json
+
 from psycopg2.extras import Inet
 
 from django.conf import settings
 from django.db.backends.base.operations import BaseDatabaseOperations
+from django.utils import six
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -243,6 +246,17 @@ class DatabaseOperations(BaseDatabaseOperations):
         placeholder_rows_sql = (", ".join(row) for row in placeholder_rows)
         values_sql = ", ".join("(%s)" % sql for sql in placeholder_rows_sql)
         return "VALUES " + values_sql
+
+    def estimate_count(self, cursor, query, params):
+        # Fetch the estimated rowcount from EXPLAIN json output.
+        query = 'explain (format json) %s' % query
+        cursor.execute(query, params)
+        explain = cursor.fetchone()[0]
+        # Older psycopg2 versions do not convert json automatically.
+        if isinstance(explain, six.string_types):
+            explain = json.loads(explain)
+
+        return explain[0]['Plan']['Plan Rows']
 
     def adapt_datefield_value(self, value):
         return value

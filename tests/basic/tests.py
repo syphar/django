@@ -588,6 +588,7 @@ class ManagerTest(SimpleTestCase):
         'in_bulk',
         'iterator',
         'earliest',
+        'estimate_count',
         'latest',
         'first',
         'last',

@@ -351,6 +351,15 @@ class QuerySet(object):
                 raise TypeError("%s is not an aggregate expression" % alias)
         return query.get_aggregation(self.db, kwargs.keys())
 
+    def estimate_count(self):
+        connection = connections[self.db]
+        if not connection.features.can_estimate_count:
+            raise NotImplemented("database backend does not support count estimations.")
+        cursor = connection.cursor()
+        query, params = self.query.sql_with_params()
+
+        return connection.ops.estimate_count(cursor, query, params)
+
     def count(self):
         """
         Performs a SELECT COUNT() and returns the number of records as an

@@ -10,7 +10,7 @@ from django.db.models import (
     Avg, Count, DecimalField, DurationField, F, FloatField, Func, IntegerField,
     Max, Min, Sum, Value,
 )
-from django.test import TestCase
+from django.test import TestCase, skipUnlessDBFeature
 from django.test.utils import Approximate, CaptureQueriesContext
 from django.utils import timezone
 
@@ -409,6 +409,74 @@ class AggregateTestCase(TestCase):
             Book.objects.aggregate(n=Count("*"))
         sql = ctx.captured_queries[0]['sql']
         self.assertIn('SELECT COUNT(*) ', sql)
+
+    @skipUnlessDBFeature('can_estimate_count')
+    def test_count_estimate(self):
+        # update statistics, then they should be the most
+        # exact
+        c = connection.cursor()
+        c.execute("ANALYZE %s" % Book._meta.db_table)
+
+        qs = Book.objects.all()
+        self.assertEqual(
+            qs.estimate_count(),
+            qs.count(),
+        )
+
+    @skipUnlessDBFeature('can_estimate_count')
+    def test_count_estimate_on_manager(self):
+        # update statistics, then they should be the most
+        # exact
+        c = connection.cursor()
+        c.execute("ANALYZE %s" % Book._meta.db_table)
+
+        qs = Book.objects
+        self.assertEqual(
+            qs.estimate_count(),
+            qs.count(),
+        )
+
+    @skipUnlessDBFeature('can_estimate_count')
+    def test_count_estimate_filter(self):
+        # update statistics, then they should be the most
+        # exact
+        c = connection.cursor()
+        c.execute("ANALYZE %s" % Book._meta.db_table)
+
+        qs = Book.objects.filter(pages__lt=500)
+        self.assertNotEqual(Book.objects.count(), qs.count())
+        self.assertEqual(
+            qs.estimate_count(),
+            qs.count(),
+        )
+
+    @skipUnlessDBFeature('can_estimate_count')
+    def test_count_estimate_limit(self):
+        # update statistics, then they should be the most
+        # exact
+        c = connection.cursor()
+        c.execute("ANALYZE %s" % Book._meta.db_table)
+
+        self.assertEqual(Book.objects.count(), 6)
+
+        self.assertEqual(
+            Book.objects.all()[:4].estimate_count(),
+            4,
+        )
+
+    @skipUnlessDBFeature('can_estimate_count')
+    def test_count_estimate_slice(self):
+        # update statistics, then they should be the most
+        # exact
+        c = connection.cursor()
+        c.execute("ANALYZE %s" % Book._meta.db_table)
+
+        self.assertEqual(Book.objects.count(), 6)
+
+        self.assertEqual(
+            Book.objects.all()[2:5].estimate_count(),
+            3,
+        )
 
     def test_non_grouped_annotation_not_in_group_by(self):
         """
